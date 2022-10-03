@@ -1,0 +1,20 @@
+{%  extends 'main.html' %}
+{% load static %}
+{% block content %}
+    <img src="{{ profile.profile_image.url }}">
+{% csrf_token %}
+    <form
+          action="{% url 'like' %}"
+          method="POST">
+    {% csrf_token %}
+    <p>
+      <button
+            class="btn btn-success"
+            type="submit"
+            value="{{ post.id }}"
+            name="post_id"
+    >like: {{ like }}
+    </button>
+    </p>
+  </form>
+{% endblock %}

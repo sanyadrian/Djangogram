@@ -1,0 +1,8 @@
+{% load static %}
+{% for profile in profiles %}
+
+<img src="{{ profile.profile_image.url }}">
+    {{ profile.user.first_name }}
+
+{% endfor %}
+

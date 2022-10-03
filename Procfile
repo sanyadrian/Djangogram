@@ -1,1 +1,1 @@
-web: pipenv run python manage.py runserver $PORT
+web: gunicorn djangoProject1.wsgi

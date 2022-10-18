@@ -32,15 +32,16 @@ ALLOWED_HOSTS = ["*"]
 # Application definition
 
 INSTALLED_APPS = [
+    'djangogram.apps.DjangogramConfig',
     'django.contrib.contenttypes',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'djangogram',
     'pytest_django',
-    'django_extensions'
+    'django_extensions',
+    'crispy_forms'
 ]
 
 
@@ -138,7 +139,7 @@ STATICFILES_DIRS = [
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 
+
 # Configure Django App for Heroku.
 import django_on_heroku
 django_on_heroku.settings(locals())
-

@@ -1,3 +1,7 @@
-/djangogram/migrations/
 /.pytest_cache/
 /venv/
+/djangogram/tests/.pytest_cache/
+.idea
+pytest.ini
+/djangogram/migrations/
+/__pycache__/

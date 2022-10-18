@@ -1,8 +1,27 @@
+{% extends 'main.html' %}
 {% load static %}
-{% for profile in profiles %}
 
-<img src="{{ profile.profile_image.url }}">
-    {{ profile.user.first_name }}
-
+{% block content %}
+{% for post in posts %}
+<a href="{% url 'profile' pk=post.author_id %}" >{{ post.author.user }}</a>
+{#<img src="{{ post.profile.profile_image.url }}">#}
+{#    {{ post.profile.user.first_name }}#}
+    <img src="{{ post.image.url }}" width="100px" height="100px">
+<form
+          action="{% url 'like' %}"
+          method="POST">
+    {% csrf_token %}
+    <p>
+      <button
+            class="btn btn-success"
+            type="submit"
+            value="{{ post.id }}"
+            name="post_id"
+    >like: {{ post.count }}
+    </button>
+    </p>
+    </form>
 {% endfor %}
+<a href="{% url 'logout' %}"> Logout </a>
+{% endblock %}
 

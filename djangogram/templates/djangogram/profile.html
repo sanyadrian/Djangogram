@@ -1,9 +1,20 @@
 {%  extends 'main.html' %}
+{% csrf_token %}
 {% load static %}
 {% block content %}
-    <img src="{{ profile.profile_image.url }}">
-{% csrf_token %}
-    <form
+    {{ profile.user }}
+    <img src="{{ profile.profile_image.url }}" width="100px" height="100px">
+    <p></p>
+    {% if request.user.profile.id == profile.id %}
+    <a href = "{% url 'edit-profile'%}"><button>Edit-profile</button></a>
+    <a href = "{% url 'create-post'%}"><button>Add post</button></a>
+    {% endif %}
+    {% for i in posts %}
+
+        <a href="{% url 'post' pk=i.id %}" >
+            <img src="{{ i.image.url }}" width="150px" height="150px">
+        </a>
+            <form
           action="{% url 'like' %}"
           method="POST">
     {% csrf_token %}
@@ -11,10 +22,12 @@
       <button
             class="btn btn-success"
             type="submit"
-            value="{{ post.id }}"
+            value="{{ i.id }}"
             name="post_id"
-    >like: {{ like }}
+    >like: {{ i.count }}
     </button>
     </p>
-  </form>
+    </form>
+
+    {% endfor %}
 {% endblock %}

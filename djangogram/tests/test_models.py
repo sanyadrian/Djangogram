@@ -31,11 +31,15 @@ def test_post(profile_factory, post_factory):
 
 @pytest.mark.django_db
 def test_tag(post_factory, tag_factory):
-    post = Post.objects.create(
-        description='asdad'
-    )
-    tag = Tag.objects.create(
-        name='asdaq',
+    # post = Post.objects.create(
+    #     description='asdad'
+    # )
+    # tag = Tag.objects.create(
+    #     name='asdaq',
+    # )
+    post = post_factory()
+    tag = tag_factory(
+        name='asdaq'
     )
     post.tags.add(tag)
     assert tag in post.tags.all()

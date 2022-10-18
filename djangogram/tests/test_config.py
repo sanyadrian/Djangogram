@@ -1,6 +1,9 @@
 import pytest
-from ..models import Profile, User, Post, Tag
+from model_mommy import mommy
+
+from ..models import Profile, Post, Tag
 from model_mommy.recipe import Recipe, foreign_key
+from django.contrib.auth.models import User
 
 user_recipe = Recipe(
     User
@@ -19,7 +22,6 @@ post_recipe = Recipe(
 
 tag_recipe = Recipe(
     Tag,
-    posts=foreign_key(post_recipe)
 )
 
 @pytest.fixture
@@ -47,4 +49,7 @@ def post_factory():
 def tag_factory():
     def maker(**kwargs):
         return tag_recipe.make(**kwargs)
+        # return mommy.make_recipe(
+        #     'tag_recipe', **kwargs
+        # )
     return maker

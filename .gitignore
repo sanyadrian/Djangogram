@@ -5,3 +5,5 @@
 pytest.ini
 /djangogram/migrations/
 /__pycache__/
+db.sqlite3
+/static/

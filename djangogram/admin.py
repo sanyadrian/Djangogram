@@ -1,5 +1,5 @@
 from django.contrib import admin
-from djangogram.models import Post, Profile, Tag, Test
+from djangogram.models import Post, Profile, Tag
 
 
 class PostAdmin(admin.ModelAdmin):
@@ -17,5 +17,3 @@ class TagAdmin(admin.ModelAdmin):
 admin.site.register(Post, PostAdmin)
 admin.site.register(Profile, ProfileAdmin)
 admin.site.register(Tag)
-admin.site.register(Test)
-

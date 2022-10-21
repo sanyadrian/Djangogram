@@ -44,3 +44,7 @@ class Like(models.Model):
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name='post_likes'
     )
+
+
+class Test(models.Model):
+    description = models.CharField(max_length=200)

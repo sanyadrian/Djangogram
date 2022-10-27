@@ -4,13 +4,18 @@ from djangogram.models import Post, Profile, Tag, User, Like
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse, resolve
 from djangogram.forms import NewUserForm, ProfileForm, UserForm, PostForm
-from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.contrib import messages
 from django.contrib.auth.models import User, AnonymousUser
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.http import HttpResponseRedirect
-
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import EmailMessage
+from djangogram.tokens import account_activation_token
 
 
 def profiles(request):
@@ -62,24 +67,75 @@ def like(request):
     return redirect(request.META.get('HTTP_REFERER'))
 
 
+def activate(request, uidb64, token):
+    User = get_user_model()
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except:
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+
+        messages.success(
+            request, 'Thank you for your email confirmation.'
+                     ' Now you can login your accout'
+        )
+        return redirect('login')
+    else:
+        messages.error(request, 'Activation link is invalid')
+    return redirect('profiles')
+
+
+def activateEmail(request, user, to_email):
+    mail_sibject = "Activate your user account"
+    message = render_to_string(
+        "djangogram/template_activate_account.html", {
+            'user': user.username,
+            'domain': get_current_site(request).domain,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'token': account_activation_token.make_token(user),
+            'protocol': 'https' if request.is_secure() else 'http'
+        }
+    )
+    email = EmailMessage(mail_sibject, message, to=[to_email])
+    if email.send():
+        messages.success(request, 'Registration succesful')
+    else:
+        messages.error(
+            request, "Unsuccessful registration. Invalid information"
+        )
+
 
 def register_request(request):
     if request.method == 'POST':
         # import ipdb; ipdb.set_trace()
         form = NewUserForm(request.POST)
+        # form_user = UserForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            login(request, user)
-            messages.success(request, 'Registration succesful')
+            user = form.save(commit=False)
+            user.is_activate = False
+            user.save()
+            Profile.objects.create(user=user, bio='1')
+            # form_user.save()
+            # login(request, user)
+
+            # messages.success(request, 'Registration succesful')
+            activateEmail(request, user, form.cleaned_data.get('email'))
             return redirect('profiles')
         messages.error(
             request, "Unsuccessful registration. Invalid information"
         )
     form = NewUserForm()
+    # form_user = ProfileForm()
     return render(
         request=request,
         template_name='djangogram/register.html',
-        context={'register_form': form}
+        context={
+            'register_form': form,
+            # 'form_user': form_user
+        }
     )
 
 
@@ -141,6 +197,7 @@ def create_post(request):
         )
         if form.is_valid():
             instance = form.save(commit=False)
+
             instance.author = request.user.profile
             instance.save()
             return redirect('profile', pk=request.user.profile.id)
@@ -148,5 +205,3 @@ def create_post(request):
         'form': form,
     }
     return render(request, 'djangogram/create_post.html', context)
-
-

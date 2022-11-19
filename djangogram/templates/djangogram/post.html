@@ -2,7 +2,91 @@
 {% load static %}
 
 {% block content %}
-<img src="{{ post.image.url }}">
+{#<img src="{{ post.image.url }}">#}
+{#    <form#}
+{#          action="{% url 'like' %}"#}
+{#          method="POST">#}
+{#    {% csrf_token %}#}
+{#    <p>#}
+{#      <button#}
+{#            class="btn btn-success"#}
+{#            type="submit"#}
+{#            value="{{ post.id }}"#}
+{#            name="post_id"#}
+{#    >like: {{ total_likes }}#}
+{#    </button>#}
+{#    </p>#}
+{#    </form>#}
+{#{{ post.description }}#}
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+  rel="stylesheet"
+/>
+<!-- Google Fonts -->
+<link
+  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
+  rel="stylesheet"
+/>
+<!-- MDB -->
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.0/mdb.min.css"
+  rel="stylesheet"
+/>
+<script
+  type="text/javascript"
+  src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.0/mdb.min.js"
+></script>
+{#<div id="carouselExampleIndicators" class="carousel slide carousel-fade" data-mdb-ride="carousel">#}
+{#  <ol class="carousel-indicators">#}
+{#      {% for p in photos %}#}
+{#      <li data-taget="#carousel-example-lz" data-slide-to="{{ forloop.counter0 }}" class="{% if forloop.counter0 == 0 %}" active{% endif %}></li>#}
+{#      {% endfor %}#}
+{#  </ol>#}
+{#  <div class="carousel-inner" role="listbox">#}
+{#    {% for p in photos %}#}
+{#   <div class="carousel-item {% if forloop.counter0 == 0 %} active{% endif %}">#}
+{#       <img class="d-block w-100" src="{{ p.image.url }}"#}
+{#        alt="First slide">#}
+{#   </div>#}
+{#  {% endfor %}#}
+{#  </div>#}
+{#  <a class="carousel-control-prev" href="">#}
+{##}
+{#  </a>#}
+{#</div>#}
+<div id="carouselMaterialStyle" class="carousel slide carousel-fade" data-mdb-ride="carousel">
+  <!-- Indicators -->
+  <div class="carousel-indicators">
+      {% for p in photos %}
+    <button type="button" data-mdb-target="#carouselMaterialStyle" data-mdb-slide-to="{{ forloop.counter0 }}" class="{% if forloop.counter0 == 0 %} active{% endif %}" aria-current="true"
+      aria-label="Slide {{ forloop.counter0 }}"></button>
+      {% endfor %}
+  </div>
+
+  <!-- Inner -->
+  <div class="carousel-inner rounded-5 shadow-4-strong">
+    <!-- Single item -->
+      {% for p in photos %}
+    <div class="carousel-item active">
+      <img src="{{ p.image.url }}" class="d-block w-100"/>
+      <div class="carousel-caption d-none d-md-block">
+        <p></p>
+      </div>
+    </div>
+      {% endfor %}
+
+
+  <!-- Controls -->
+  <button class="carousel-control-prev" type="button" data-mdb-target="#carouselMaterialStyle" data-mdb-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button class="carousel-control-next" type="button" data-mdb-target="#carouselMaterialStyle" data-mdb-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>
+<!-- Carousel wrapper -->
     <form
           action="{% url 'like' %}"
           method="POST">
@@ -17,7 +101,6 @@
     </button>
     </p>
     </form>
-{{ post.description }}
 
-
+{{ post.render_description_to_html | safe }}
 {% endblock %}

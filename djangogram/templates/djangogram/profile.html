@@ -9,10 +9,12 @@
     <a href = "{% url 'edit-profile'%}"><button>Edit-profile</button></a>
     <a href = "{% url 'create-post'%}"><button>Add post</button></a>
     {% endif %}
-    {% for i in posts %}
+    {% for post in posts %}
 
-        <a href="{% url 'post' pk=i.id %}" >
+        <a href="{% url 'post' pk=post.id %}" >
+        {% for i in post.post_image.all %}
             <img src="{{ i.image.url }}" width="150px" height="150px">
+        {% endfor %}
         </a>
             <form
           action="{% url 'like' %}"
@@ -22,9 +24,9 @@
       <button
             class="btn btn-success"
             type="submit"
-            value="{{ i.id }}"
+            value="{{ post.id }}"
             name="post_id"
-    >like: {{ i.count }}
+    >like: {{ post.count }}
     </button>
     </p>
     </form>

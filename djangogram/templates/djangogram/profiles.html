@@ -6,8 +6,10 @@
 <a href="{% url 'profile' pk=post.author_id %}" >{{ post.author.user }}</a>
 {#<img src="{{ post.profile.profile_image.url }}">#}
 {#    {{ post.profile.user.first_name }}#}
-    <img src="{{ post.image.url }}" width="100px" height="100px">
-<form
+    {% for i in post.post_image.all %}
+    <img src="{{ i.image.url }}" width="100px" height="100px">
+    {% endfor %}
+    <form
           action="{% url 'like' %}"
           method="POST">
     {% csrf_token %}

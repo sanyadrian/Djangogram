@@ -5,6 +5,7 @@ from .test_config import (
     post_factory, profile_factory, user_factory, tag_factory
 )
 from django.contrib.auth.models import User
+from djangogram.utils import extract_tags
 pytestmark = [pytest.mark.django_db]
 
 
@@ -24,7 +25,7 @@ def test_views_post(client, user_factory, profile_factory, post_factory):
         bio='asda', user=user
     )
     post = post_factory(
-        description='asdad', author=profile, image='static/images/defaulf.png'
+        description='asdad', author=profile, image='static/images/default.png'
     )
     url = reverse('post', kwargs={'pk': post.id})
     response = client.get(url)
@@ -46,4 +47,22 @@ def test_login(client, user_factory):
     assert response.status_code == 200
 
 
+def test_tags(client, post_factory):
+    post = post_factory(
+        description='asd #asd'
+    )
+    tag = Tag.objects.create(
+        name="asd"
+    )
+    post.tags.add(tag)
+    # url = reverse('tag')
+    url = f'/tag?tag={tag.name}'
+    response = client.get(url)
+    assert response.status_code == 200
 
+
+def test_profiles(client, post_factory):
+    post = post_factory()
+    url = reverse('profiles')
+    response = client.get(url)
+    assert response.status_code == 200

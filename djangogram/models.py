@@ -1,7 +1,10 @@
+import re
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.urls import reverse
 
 
 class Profile(models.Model):
@@ -24,12 +27,28 @@ class Profile(models.Model):
 
 
 class Post(models.Model):
-    description = models.CharField(max_length=200)
+    description = models.CharField(max_length=200, null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(
         Profile, on_delete=models.CASCADE, blank=True, null=True
     )
     image = models.ImageField(blank=True, null=True)
+
+    def render_description_to_html(self):
+        from djangogram.utils import extract_tags
+        tags = extract_tags(self)
+        new_description = self.description
+        url = reverse('tag')
+        for tag in tags:
+            new_description = new_description.replace(f'#{tag[0]}', f'<a href="{url}?tag={tag[0]}">#{tag[0]}</a>')
+        return new_description
+
+
+class PostImage(models.Model):
+    post = models.ForeignKey(
+        Post, default=None, on_delete=models.CASCADE, related_name='post_image'
+    )
+    image = models.ImageField(blank=True)
 
 
 class Tag(models.Model):

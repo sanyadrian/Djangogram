@@ -1,3 +1,10 @@
-{{ tag.name }}
-{{ tag.created }}
-{{ tag.posts }}
+{% extends 'main.html' %}
+
+{% block content %}
+
+    {% for post in posts %}
+        {% for i in post.post_image.all %}
+            <img src="{{ i.image.url }}" width="150px" height="150px">
+        {% endfor %}
+    {% endfor %}
+{% endblock %}

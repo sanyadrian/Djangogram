@@ -2,9 +2,9 @@ import pytest
 from djangogram.models import Profile, User, Post, Tag
 from datetime import datetime
 from .test_config import (
-    user_factory, profile_factory, post_factory, tag_factory
+    user_factory, profile_factory, post_factory, tag_factory,
+    post_image_factory
 )
-
 
 @pytest.mark.django_db
 def test_profile(user_factory, profile_factory):
@@ -31,12 +31,6 @@ def test_post(profile_factory, post_factory):
 
 @pytest.mark.django_db
 def test_tag(post_factory, tag_factory):
-    # post = Post.objects.create(
-    #     description='asdad'
-    # )
-    # tag = Tag.objects.create(
-    #     name='asdaq',
-    # )
     post = post_factory()
     tag = tag_factory(
         name='asdaq'

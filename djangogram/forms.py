@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from djangogram.models import Profile, Post
+from djangogram.models import Profile, Post, PostImage
 
 
 class NewUserForm(UserCreationForm):
@@ -34,4 +34,10 @@ class UserForm(forms.ModelForm):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ('description', 'image')
+        fields = ('description',)
+
+
+class PostImageForm(forms.ModelForm):
+    class Meta:
+        model = PostImage
+        fields = ('image',)

@@ -3,6 +3,8 @@
 /djangogram/tests/.pytest_cache/
 .idea
 pytest.ini
-/__pycache__/
+__pycache__/
 db.sqlite3
 /static/
+*.py[cod]
+*$py.class

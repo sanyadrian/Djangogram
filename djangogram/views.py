@@ -1,9 +1,11 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from djangogram.models import Post, Profile, Tag, User, Like
+from djangogram.models import Post, Profile, Tag, User, Like, PostImage
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse, resolve
-from djangogram.forms import NewUserForm, ProfileForm, UserForm, PostForm
+from djangogram.forms import (
+    NewUserForm, ProfileForm, UserForm, PostForm, PostImageForm
+)
 from django.contrib.auth import login, authenticate, logout, get_user_model
 from django.contrib import messages
 from django.contrib.auth.models import User, AnonymousUser
@@ -16,6 +18,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 from djangogram.tokens import account_activation_token
+from djangogram.utils import extract_tags
 
 
 def profiles(request):
@@ -43,14 +46,35 @@ def profile(request, pk):
 
 def post(request, pk):
     # post = Post.objects.get(pk=pk)
+    # post = get_object_or_404(Post, pk=pk)
     post = get_object_or_404(Post, pk=pk)
+    photos = PostImage.objects.filter(post=post)
     # total_likes = Like.objects.filter(post__author=post.author).count()
     total_likes = post.post_likes.count()
     context = {
         'post': post,
-        'total_likes': total_likes
+        'total_likes': total_likes,
+        'photos': photos,
     }
     return render(request, 'djangogram/post.html', context)
+
+
+# def post(request, pk, tag):
+#     # post = Post.objects.get(pk=pk)
+#     # post = get_object_or_404(Post, pk=pk)
+#     # tag = request.GET.get('tag')
+#     post = get_object_or_404(Post, pk=pk)
+#     photos = PostImage.objects.filter(post=post)
+#     tags = get_object_or_404(Tag, tag=tag)
+#     # total_likes = Like.objects.filter(post__author=post.author).count()
+#     total_likes = post.post_likes.count()
+#     context = {
+#         'post': post,
+#         'total_likes': total_likes,
+#         'photos': photos,
+#         'tags': tags
+#     }
+#     return render(request, 'djangogram/post.html', context)
 
 
 @csrf_exempt
@@ -188,20 +212,63 @@ def editProfile(request):
     return render(request, 'djangogram/profiles_form.html', context)
 
 
+# @login_required(login_url='login')
+# def create_post(request):
+#     form = PostForm()
+#     if request.method == 'POST':
+#         form = PostForm(
+#             request.POST, request.FILES
+#         )
+#         form_image = PostImageForm(
+#             request.POST, request.FILES
+#         )
+#         if form.is_valid():
+#             instance = form.save(commit=False)
+#             instance.author = request.user.profile
+#             instance.save()
+#             extract_tags(instance)
+#             return redirect('profile', pk=request.user.profile.id)
+#     context = {
+#         'form': form,
+#     }
+#     return render(request, 'djangogram/create_post.html', context)
+
+
 @login_required(login_url='login')
 def create_post(request):
     form = PostForm()
+    form_image = PostImageForm()
     if request.method == 'POST':
         form = PostForm(
             request.POST, request.FILES
         )
-        if form.is_valid():
+        form_image = PostImageForm(
+            request.POST, request.FILES
+        )
+        if form.is_valid() and form_image.is_valid():
             instance = form.save(commit=False)
-
             instance.author = request.user.profile
+            # instance_image.post.author = request.user.profile
             instance.save()
+            for file in request.FILES.getlist('images'):
+            #     instance_image = form_image.save(commit=False)
+            #     instance_image.post = instance
+            #     instance_image.image = file
+            #     instance_image.save()
+                PostImage.objects.create(post=instance, image=file)
+            extract_tags(instance)
             return redirect('profile', pk=request.user.profile.id)
     context = {
         'form': form,
+        'form_image': form_image
     }
     return render(request, 'djangogram/create_post.html', context)
+
+
+def post_by_tags(request):
+    tag = request.GET.get('tag')
+    obj, _ = Tag.objects.get_or_create(name=tag)
+    context = {
+        'posts': obj.posts.all()
+    }
+    return render(request, 'djangogram/tag.html', context)

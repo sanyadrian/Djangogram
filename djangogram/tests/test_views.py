@@ -1,8 +1,8 @@
 import pytest
 from ..models import Profile, User, Post, Tag
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from .test_config import (
-    post_factory, profile_factory, user_factory, tag_factory
+    post_factory, profile_factory, user_factory, tag_factory, follower_factory
 )
 from django.contrib.auth.models import User
 from djangogram.utils import extract_tags
@@ -66,3 +66,26 @@ def test_profiles(client, post_factory):
     url = reverse('profiles')
     response = client.get(url)
     assert response.status_code == 200
+
+
+def test_follow(client, profile_factory, user_factory):
+    credentials = {
+        'username': 'admin',
+        'password': 'password'
+    }
+    user = user_factory(
+            **credentials
+        )
+    profile = profile_factory(
+        user=user
+    )
+    profile2 = profile_factory(
+        user=user_factory()
+    )
+    client.force_login(user)
+    url = reverse_lazy('follow')
+    response = client.post(
+        path=url, data={'username': profile2.user.username}
+    )
+    assert response.status_code == 200
+

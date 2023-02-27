@@ -30,6 +30,37 @@
     </button>
     </p>
     </form>
+        {% if not post.author.user.followers.exists %}
+         <form
+          action="{% url 'follow' %}"
+          method="POST">
+    {% csrf_token %}
+    <p>
+      <button
+            class="btn btn-success"
+            type="submit"
+            value="{{ post.author.user.username }}"
+            name="username"
+    >Follow
+    </button>
+    </p>
+    </form>
+           {% else %}
+            <form
+          action="{% url 'follow' %}"
+          method="POST">
+    {% csrf_token %}
+    <p>
+      <button
+            class="btn btn-success"
+            type="submit"
+            value="{{ post.author.user.username }}"
+            name="username"
+    >Unfollow
+    </button>
+    </p>
+    </form>
+    {% endif %}
 
     {% endfor %}
 {% endblock %}

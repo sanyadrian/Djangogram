@@ -1,6 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
-from djangogram.models import Post, Profile, Tag, User, Like, PostImage
+from djangogram.models import (
+    Post, Profile, Tag, User, Like, PostImage, UserFollowing
+)
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse, resolve
 from djangogram.forms import (
@@ -19,6 +21,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.core.mail import EmailMessage
 from djangogram.tokens import account_activation_token
 from djangogram.utils import extract_tags
+from django.db import transaction
 
 
 def profiles(request):
@@ -272,3 +275,20 @@ def post_by_tags(request):
         'posts': obj.posts.all()
     }
     return render(request, 'djangogram/tag.html', context)
+
+
+def follow(request):
+    username = request.POST.get('username')
+    user = request.user
+    # import ipdb; ipdb.set_trace()
+    following = get_object_or_404(User, username=username)
+    new_follower = UserFollowing.objects.filter(user=user, following_user=following)
+    # import ipdb; ipdb.set_trace()
+    if new_follower.exists():
+        new_follower.delete()
+        return redirect(request.META.get('HTTP_REFERER'))
+    UserFollowing.objects.create(user=user, following_user=following)
+    # return HttpResponseRedirect(
+    #     reverse('profile', kwargs={'pk': following.profile.id})
+    # )
+    return redirect(request.META.get('HTTP_REFERER'))

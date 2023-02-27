@@ -14,4 +14,5 @@ urlpatterns = [
     path('create-post', views.create_post, name='create-post'),
     path('activate/<uidb64>/<token>', views.activate, name='activate'),
     path('tag', views.post_by_tags, name='tag'),
+    path('follow', views.follow, name='follow')
 ]
